@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AFRO Stack — Agentic Farm-Gate Resource Orchestrator</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   AFRO STACK — Design System
+   ═══════════════════════════════════════════════════ */
+:root {
+  --forest:    #1a2e1a;
+  --green-dk:  #2d4a2d;
+  --green-md:  #3d6b3d;
+  --green-lt:  #5a8f5a;
+  --green-muted: #7aad7a;
+  --cream:     #f5f0e8;
+  --off-white: #ede8dc;
+  --charcoal:  #2c2c2c;
+  --slate:     #4a4a4a;
+  --muted:     #6b6b6b;
+  --border:    #c8c0b0;
+  --border-lt: #ddd6c8;
+  --amber:     #c4841a;
+  --amber-lt:  #f0a832;
+  --amber-bg:  #fdf3e0;
+  --red:       #b03030;
+  --red-lt:    #e05050;
+  --red-bg:    #fde8e8;
+  --blue:      #2a6090;
+  --blue-lt:   #4a90d0;
+  --blue-bg:   #e8f2fa;
+  --white:     #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.10);
+  --shadow-md: 0 3px 10px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.14);
+  --radius:    4px;
+  --radius-md: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--off-white); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══ LAYOUT ══════════════════════════════════════════ */
+.app-shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ── HEADER ── */
+.app-header {
+  background: var(--forest);
+  color: var(--cream);
+  padding: 0 24px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--green-dk);
+  z-index: 100;
+}
+.header-brand { display: flex; align-items: baseline; gap: 10px; }
+.header-logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--green-muted);
+  text-transform: uppercase;
+}
+.header-tagline {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.header-right { display: flex; align-items: center; gap: 20px; }
+.system-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76,175,80,0.7);
+  flex-shrink: 0;
+}
+.status-dot.offline { background: var(--red-lt); box-shadow: 0 0 6px rgba(224,80,80,0.7); }
+.status-dot.warning { background: var(--amber-lt); box-shadow: 0 0 6px rgba(240,168,50,0.7); }
+.status-label { color: rgba(255,255,255,0.7); letter-spacing: 0.05em; text-transform: uppercase; }
+.header-connectivity { display: flex; gap: 12px; }
+.conn-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: 600;
+  border: 1px solid;
+}
+.conn-badge.online  { color: #6ed86e; border-color: #4caf5060; background: rgba(76,175,80,0.12); }
+.conn-badge.offline { color: var(--red-lt); border-color: rgba(224,80,80,0.4); background: rgba(224,80,80,0.1); }
+.conn-badge.active  { color: var(--amber-lt); border-color: rgba(240,168,50,0.4); background: rgba(240,168,50,0.1); }
+
+/* ── BODY LAYOUT ── */
+.app-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR NAV ── */
+.sidebar {
+  width: 200px;
+  background: var(--green-dk);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-section-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding: 16px 16px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.82rem;
+  text-align: left;
+  width: 100%;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+.nav-item.active {
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
+  border-left-color: var(--green-muted);
+  font-weight: 600;
+}
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--amber);
+  color: white;
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 16px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.25);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  letter-spacing: 0.05em;
+}
+
+/* ── MAIN CONTENT ── */
+.main-content { flex: 1; overflow-y: auto; background: var(--cream); }
+.page { padding: 24px; max-width: 1100px; }
+
+/* ── OFFLINE BANNER ── */
+.offline-banner {
+  background: var(--red-bg);
+  border-bottom: 2px solid var(--red);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.82rem;
+  color: var(--red);
+}
+.offline-banner-icon { font-size: 1.1rem; }
+.offline-banner strong { font-weight: 700; }
+.offline-banner-detail { margin-left: auto; color: var(--muted); font-size: 0.75rem; }
+
+/* ══ TYPOGRAPHY ══════════════════════════════════════ */
+.page-title { font-size: 1.3rem; font-weight: 700; color: var(--forest); letter-spacing: -0.01em; }
+.page-subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 2px; letter-spacing: 0.02em; }
+.section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--slate); margin-bottom: 12px; }
+.label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.value-lg { font-size: 1.6rem; font-weight: 700; color: var(--charcoal); line-height: 1.1; }
+.value-md { font-size: 1.1rem; font-weight: 700; color: var(--charcoal); }
+.value-sm { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+
+/* ══ CARDS ═══════════════════════════════════════════ */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-body { padding: 16px; }
+.card-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-lt);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ══ METRIC CARDS ════════════════════════════════════ */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.metric-card {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.metric-card.warning { border-left: 3px solid var(--amber); }
+.metric-card.critical { border-left: 3px solid var(--red); }
+.metric-card.active  { border-left: 3px solid var(--green-lt); }
+.metric-card.info    { border-left: 3px solid var(--blue-lt); }
+.metric-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+.metric-value { font-size: 1.5rem; font-weight: 700; color: var(--charcoal); line-height: 1; }
+.metric-value.green  { color: var(--green-md); }
+.metric-value.amber  { color: var(--amber); }
+.metric-value.red    { color: var(--red); }
+.metric-value.blue   { color: var(--blue); }
+.metric-sub { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
+/* ══ BADGES & TAGS ═══════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.badge.green  { background: #e8f5e8; color: var(--green-md); border: 1px solid #c0dcc0; }
+.badge.amber  { background: var(--amber-bg); color: var(--amber); border: 1px solid #f0d090; }
+.badge.red    { background: var(--red-bg); color: var(--red); border: 1px solid #f0c0c0; }
+.badge.blue   { background: var(--blue-bg); color: var(--blue); border: 1px solid #c0d8f0; }
+.badge.grey   { background: #f0f0f0; color: var(--slate); border: 1px solid #d8d8d8; }
+.badge.white  { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25); }
+
+.sim-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--blue);
+  background: var(--blue-bg);
+  border: 1px solid #c0d8f0;
+  padding: 1px 5px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+/* ══ BUTTONS ════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-primary   { background: var(--green-md); color: white; border-color: var(--green-dk); }
+.btn-secondary { background: var(--white); color: var(--slate); border-color: var(--border); }
+.btn-warning   { background: var(--amber); color: white; border-color: #a06010; }
+.btn-danger    { background: var(--red); color: white; border-color: #882020; }
+.btn-info      { background: var(--blue); color: white; border-color: #1a4870; }
+.btn-ghost     { background: transparent; color: var(--green-md); border-color: var(--green-md); }
+.btn-sm { padding: 5px 10px; font-size: 0.72rem; }
+.btn-xs { padding: 3px 8px; font-size: 0.67rem; }
+
+/* ══ GRID HELPERS ════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.flex-row { display: flex; align-items: center; gap: 12px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-col { display: flex; flex-direction: column; gap: 8px; }
+.gap-4  { gap: 4px; }
+.gap-8  { gap: 8px; }
+.gap-16 { gap: 16px; }
+.mb-4  { margin-bottom: 4px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+/* ══ FIELD MAP ═══════════════════════════════════════ */
+.field-map-container {
+  background: #1e3320;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid #2a4a2a;
+  position: relative;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field-map-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 4px;
+}
+.field-map-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; }
+.field-zone {
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  cursor: default;
+  border: 1px solid;
+  transition: all 0.2s;
+  position: relative;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.field-zone.healthy  { background: rgba(74,143,74,0.25); border-color: rgba(74,143,74,0.5); }
+.field-zone.warning  { background: rgba(196,132,26,0.25); border-color: rgba(196,132,26,0.5); }
+.field-zone.active   { background: rgba(42,96,144,0.25); border-color: rgba(42,96,144,0.5); }
+.field-zone.stress   { background: rgba(176,48,48,0.2); border-color: rgba(176,48,48,0.45); }
+.field-name { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.06em; }
+.field-status-text { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
+.field-moisture-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.field-moisture-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green-muted);
+  transition: width 0.5s ease;
+}
+.field-moisture-fill.low { background: var(--amber-lt); }
+.field-moisture-fill.critical { background: var(--red-lt); }
+
+/* ══ WATER LEVEL VIZ ═════════════════════════════════ */
+.water-level-viz {
+  background: #0f2030;
+  border-radius: var(--radius-md);
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #1a3a50;
+}
+.water-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, #1a5f8a, #2d90c0);
+  transition: height 0.6s ease;
+  opacity: 0.85;
+}
+.water-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(120,200,255,0.6);
+}
+.water-label-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.water-level-value { font-size: 1.4rem; font-weight: 700; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+.water-level-unit  { font-size: 0.65rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.1em; }
+.water-threshold-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(240,168,50,0.8);
+  border-top: 1px dashed rgba(240,168,50,0.6);
+}
+.water-threshold-label {
+  position: absolute;
+  right: 8px;
+  font-size: 0.6rem;
+  color: var(--amber-lt);
+  background: rgba(15,32,48,0.8);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.water-pump-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: rgba(0,0,0,0.5);
+}
+.water-pump-indicator.on { color: #6ed86e; }
+.water-pump-indicator.off { color: rgba(255,255,255,0.4); }
+
+/* ══ DECISION PANEL ══════════════════════════════════ */
+.decision-panel {
+  background: var(--forest);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid var(--green-dk);
+}
+.decision-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+.decision-section { margin-bottom: 12px; }
+.decision-section-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 4px;
+}
+.decision-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.decision-key { font-size: 0.75rem; color: rgba(255,255,255,0.55); }
+.decision-val { font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.88); }
+.decision-val.warning { color: var(--amber-lt); }
+.decision-val.critical { color: var(--red-lt); }
+.decision-val.good { color: #6ed86e; }
+.decision-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 10px 0; }
+.decision-output {
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  border-left: 3px solid var(--green-lt);
+}
+.decision-output.warning-border { border-left-color: var(--amber-lt); }
+.decision-output.critical-border { border-left-color: var(--red-lt); }
+.decision-output-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); margin-bottom: 4px; }
+.decision-output-text { font-size: 0.82rem; font-weight: 600; color: white; }
+.decision-authority {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+}
+.authority-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.authority-badge.cloud { color: var(--blue-lt); border-color: rgba(74,144,208,0.4); background: rgba(74,144,208,0.1); }
+.authority-badge.edge  { color: var(--amber-lt); border-color: rgba(240,168,50,0.4); background: rgba(240,168,50,0.1); }
+.authority-badge.hw    { color: #c080ff; border-color: rgba(192,128,255,0.4); background: rgba(192,128,255,0.1); }
+
+/* ══ EVENT LOG ═══════════════════════════════════════ */
+.event-log {
+  background: #111;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.72rem;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #222;
+}
+.log-entry { display: flex; gap: 10px; margin-bottom: 4px; line-height: 1.4; }
+.log-time { color: #555; flex-shrink: 0; }
+.log-msg { }
+.log-msg.info    { color: #6ed86e; }
+.log-msg.warning { color: var(--amber-lt); }
+.log-msg.critical { color: var(--red-lt); }
+.log-msg.system  { color: #4a90d0; }
+.log-msg.muted   { color: #666; }
+
+/* ══ SIM CONTROLS ════════════════════════════════════ */
+.sim-controls {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.sim-controls-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.sim-controls-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+}
+.sim-controls-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--blue-bg);
+  color: var(--blue);
+  border: 1px solid #c0d8f0;
+  padding: 1px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+}
+.sim-btn-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ══ FARM OVERVIEW ═══════════════════════════════════ */
+.farm-overview {
+  background: var(--forest);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  color: rgba(255,255,255,0.85);
+  border: 1px solid var(--green-dk);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.farm-title { font-size: 1rem; font-weight: 700; color: white; }
+.farm-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+.farm-meta-item { }
+.farm-meta-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); }
+.farm-meta-val { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+.farm-mode-badge {
+  background: rgba(122,173,122,0.2);
+  border: 1px solid rgba(122,173,122,0.4);
+  color: var(--green-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+/* ══ PROGRESS BAR ════════════════════════════════════ */
+.progress-bar {
+  height: 6px;
+  background: var(--border-lt);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--green-lt);
+  transition: width 0.5s ease;
+}
+.progress-fill.amber { background: var(--amber); }
+.progress-fill.red   { background: var(--red); }
+.progress-fill.blue  { background: var(--blue-lt); }
+
+/* ══ CROP HEALTH PAGE ════════════════════════════════ */
+.zone-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.zone-card {
+  border-radius: var(--radius-md);
+  padding: 14px;
+  border: 2px solid;
+  cursor: default;
+  transition: all 0.2s;
+}
+.zone-card.normal  { background: #f0f8f0; border-color: #c0dcc0; }
+.zone-card.stress  { background: #fff4e8; border-color: #e8b870; }
+.zone-card.critical { background: var(--red-bg); border-color: #f0c0c0; }
+.zone-name { font-size: 0.78rem; font-weight: 700; color: var(--charcoal); }
+.zone-status { font-size: 0.68rem; margin-top: 2px; }
+.zone-mini-stats { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.zone-mini-stat { display: flex; justify-content: space-between; font-size: 0.68rem; }
+.zone-mini-label { color: var(--muted); }
+.zone-mini-val { font-weight: 600; color: var(--charcoal); }
+.zone-mini-val.low { color: var(--amber); }
+.zone-mini-val.high { color: var(--red); }
+.zone-mini-val.neg { color: var(--red); }
+
+.assessment-card {
+  background: var(--amber-bg);
+  border: 1px solid #e8b870;
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.assessment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.assessment-icon { font-size: 1.4rem; }
+.assessment-title { font-size: 0.85rem; font-weight: 700; color: var(--amber); }
+.assessment-confidence { font-size: 0.68rem; color: var(--muted); }
+.assessment-factors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.assessment-factor {
+  background: rgba(255,255,255,0.7);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 0.72rem;
+}
+.factor-label { color: var(--muted); margin-bottom: 2px; }
+.factor-val { font-weight: 700; color: var(--charcoal); }
+.disclaimer {
+  font-size: 0.65rem;
+  color: var(--muted);
+  background: rgba(255,255,255,0.6);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  border-left: 2px solid var(--border);
+  font-style: italic;
+}
+
+/* ══ STORE PAGE ══════════════════════════════════════ */
+.storage-visual {
+  background: linear-gradient(135deg, #0d1f2d, #1a3a50);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  color: white;
+  border: 1px solid #2a4a60;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.storage-metric { text-align: center; }
+.storage-metric-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.storage-metric-val { font-size: 1.3rem; font-weight: 700; }
+.storage-metric-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.lot-card {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border-left: 4px solid var(--amber);
+}
+.lot-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.lot-id { font-size: 1rem; font-weight: 700; color: var(--charcoal); font-family: 'Consolas', monospace; }
+.lot-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.lot-detail { }
+.lot-detail-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.lot-detail-val { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+.recommendation-card {
+  background: var(--forest);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border: 1px solid var(--green-dk);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.rec-icon { font-size: 1.3rem; flex-shrink: 0; }
+.rec-body { }
+.rec-action { font-size: 0.85rem; font-weight: 700; color: white; }
+.rec-reason { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 3px; }
+.rec-tag {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(122,173,122,0.2);
+  color: var(--green-muted);
+  border: 1px solid rgba(122,173,122,0.3);
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+/* ══ FPO NETWORK PAGE ════════════════════════════════ */
+.fpo-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.supply-demand-bar { }
+.sd-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.sd-label { font-size: 0.72rem; color: var(--slate); width: 100px; flex-shrink: 0; }
+.sd-bar-track { flex: 1; height: 8px; background: var(--border-lt); border-radius: 4px; overflow: hidden; }
+.sd-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.sd-val { font-size: 0.72rem; font-weight: 600; color: var(--charcoal); width: 60px; text-align: right; }
+.dispatch-card {
+  background: var(--forest);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  color: white;
+  border: 1px solid var(--green-dk);
+}
+.dispatch-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.dispatch-title { font-size: 0.88rem; font-weight: 700; color: white; }
+.dispatch-subtitle { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+.dispatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.dispatch-item-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+.dispatch-item-val { font-size: 0.9rem; font-weight: 700; color: white; }
+.dispatch-reason {
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  border-left: 3px solid var(--amber-lt);
+}
+.process-chain { display: flex; align-items: center; gap: 0; margin-top: 16px; }
+.process-step {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.process-step.active-step { background: rgba(90,143,90,0.25); border-color: rgba(90,143,90,0.5); }
+.process-step-num { font-size: 0.6rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; }
+.process-step-name { font-size: 0.78rem; font-weight: 700; color: white; margin-top: 2px; }
+.process-arrow { color: rgba(255,255,255,0.25); font-size: 0.9rem; padding: 0 4px; }
+
+/* ══ ARCH VIZ ════════════════════════════════════════ */
+.arch-section {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.arch-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate);
+}
+.arch-toggle:hover { background: var(--off-white); }
+.arch-body { padding: 16px; border-top: 1px solid var(--border-lt); }
+.arch-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.arch-col-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px; }
+.arch-node {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.arch-node.primary { background: var(--forest); color: rgba(255,255,255,0.85); border-color: var(--green-dk); }
+.arch-node.highlight { background: var(--green-dk); color: rgba(255,255,255,0.85); border-color: var(--green-md); }
+.arch-arrow { text-align: center; color: var(--muted); font-size: 0.75rem; margin: 2px 0; }
+.arch-principle { display: flex; gap: 10px; }
+.arch-principle-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.arch-principle-item.cloud { background: var(--blue-bg); color: var(--blue); border: 1px solid #c0d8f0; }
+.arch-principle-item.edge  { background: var(--amber-bg); color: var(--amber); border: 1px solid #f0d090; }
+.arch-principle-item.hw    { background: #f4eaff; color: #7030a0; border: 1px solid #d8b8f0; }
+
+/* ══ UTILIZATION BAR ═════════════════════════════════ */
+.util-bar-wrap { margin-top: 12px; }
+.util-bar-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.util-bar-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.util-bar-fill  { height: 100%; background: var(--green-lt); border-radius: 4px; transition: width 0.5s ease; }
+
+/* ══ TARGET LABELS ═══════════════════════════════════ */
+.target-box {
+  background: var(--blue-bg);
+  border: 1px solid #c0d8f0;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+.target-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); font-weight: 700; margin-bottom: 10px; }
+.target-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.target-row:last-child { border-bottom: none; }
+.target-metric { font-size: 0.72rem; color: var(--slate); }
+.target-values { display: flex; gap: 12px; text-align: right; }
+.target-baseline { font-size: 0.72rem; color: var(--muted); }
+.target-goal { font-size: 0.72rem; font-weight: 700; color: var(--blue); }
+.target-tag { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; background: var(--blue-bg); color: var(--blue); border: 1px solid #c0d8f0; padding: 1px 4px; border-radius: 2px; margin-left: 4px; }
+
+/* ══ ANIMATIONS ══════════════════════════════════════ */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulsing { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.3s ease forwards; }
+
+@keyframes pump-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spinning { display: inline-block; animation: pump-spin 1.5s linear infinite; }
+
+/* ══ RESPONSIVE ══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .sidebar { width: 160px; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .fpo-metrics { grid-template-columns: repeat(3, 1fr); }
+  .storage-visual { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .sidebar { width: 44px; }
+  .nav-item span:not(.nav-icon) { display: none; }
+  .sidebar-section-label { display: none; }
+  .page { padding: 16px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ══ MISC UTILITIES ══════════════════════════════════ */
+.text-muted { color: var(--muted); }
+.text-amber { color: var(--amber); }
+.text-red   { color: var(--red); }
+.text-green { color: var(--green-md); }
+.text-blue  { color: var(--blue); }
+.text-white { color: white; }
+.text-xs { font-size: 0.68rem; }
+.text-sm { font-size: 0.78rem; }
+.font-mono { font-family: 'Consolas', monospace; }
+.font-bold { font-weight: 700; }
+.uppercase { text-transform: uppercase; letter-spacing: 0.08em; }
+.divider { border: none; border-top: 1px solid var(--border-lt); margin: 16px 0; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.page-header { margin-bottom: 20px; }
+.page-header-row { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useReducer } = React;
+
+/* ═══════════════════════════════════════════════
+   SIMULATION ENGINE
+   ═══════════════════════════════════════════════ */
+const INITIAL_STATE = {
+  // Navigation
+  page: 'dashboard',
+
+  // Farm
+  farmName: "Riya's Demonstration Farm",
+  farmArea: '1.6 ha',
+  crop: 'Paddy',
+  mode: 'AUTO',
+
+  // Irrigation
+  waterLevel: -14.0,
+  waterThreshold: -15.0,
+  waterTarget: -12.0,
+  soilMoisture: 34,
+  pumpState: 'OFF',
+  pumpEnergy: 3.8,
+  irrigationPhase: 'idle',   // idle | drying | threshold-crossed | pumping | recovering | complete
+
+  // Field zones
+  fields: [
+    { id: 1, name: 'Field 1', status: 'healthy', moisture: 72, area: '0.5 ha' },
+    { id: 2, name: 'Field 2', status: 'healthy', moisture: 68, area: '0.6 ha' },
+    { id: 3, name: 'Field 3', status: 'healthy', moisture: 38, area: '0.5 ha' },
+  ],
+
+  // Connectivity
+  cloudOnline: true,
+  edgeOnline: true,
+  outageActive: false,
+  syncPending: 0,
+
+  // Crop health
+  cropStressActive: false,
+  photoRequested: false,
+  vegTrend: -2,
+  soilMoistureField3: 52,
+  rainfall7d: 22,
+  tempElevated: false,
+
+  // Storage
+  storageTemp: 7.2,
+  storageHumidity: 71,
+  solarAvailability: 4.8,
+  batteryLevel: 78,
+  storageUsed: 44,
+  storageCapacity: 62,
+  qualityRiskHours: 18,
+  lotId: 'T-042',
+  lotCrop: 'Tomatoes',
+  buyerDeadline: 'Tomorrow · 10:00',
+
+  // FPO
+  activeFarmers: 238,
+  totalFarmers: 250,
+  expectedHarvest: 84,
+  fpoStorageCapacity: 62,
+  fpoStorageAvailable: 18,
+  buyerDemand: 71,
+  newHarvestAdded: false,
+
+  // Event log
+  events: [
+    { time: '08:38', msg: 'AFRO edge controller initialized', type: 'system' },
+    { time: '08:39', msg: 'Field sensors connected — all zones nominal', type: 'info' },
+    { time: '08:40', msg: 'Cloud sync complete — weather data refreshed', type: 'info' },
+    { time: '08:41', msg: 'Dashboard ready — monitoring active', type: 'muted' },
+  ],
+
+  // Arch panel
+  archOpen: false,
+
+  // Field inspection
+  inspectionScheduled: false,
+  inspectionTime: '',
+
+  // FPO dispatch
+  dispatchConfirmed: false,
+  dispatchTime: '',
+  showAllLots: false,
+  routeOptimised: false,
+};
+
+function addEvent(state, msg, type='info') {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const time = `${h}:${m}:${s}`;
+  return { ...state, events: [{ time, msg, type }, ...state.events].slice(0, 40) };
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+
+    case 'SET_PAGE':
+      return { ...state, page: action.payload };
+
+    case 'TICK_DRY': {
+      if (state.irrigationPhase !== 'drying') return state;
+      const newLevel = parseFloat(Math.max(state.waterLevel - 0.5, -18).toFixed(1));
+      let next = { ...state, waterLevel: newLevel, soilMoisture: Math.max(18, state.soilMoisture - 2) };
+      if (newLevel <= state.waterThreshold) {
+        next = { ...next, irrigationPhase: 'threshold-crossed' };
+        next = addEvent(next, 'Water threshold crossed: ' + newLevel.toFixed(1) + ' cm (threshold: ' + state.waterThreshold + ' cm)', 'warning');
+        next = addEvent(next, 'Edge rule evaluating condition…', 'system');
+      }
+      return next;
+    }
+
+    case 'TRIGGER_IRRIGATION': {
+      let next = { ...state, pumpState: 'ON', irrigationPhase: 'pumping' };
+      next = addEvent(next, 'AFRO edge rule triggered — Irrigation required', 'warning');
+      next = addEvent(next, 'Pump ON — irrigation cycle started', 'info');
+      return next;
+    }
+
+    case 'TICK_PUMP': {
+      if (state.irrigationPhase !== 'pumping') return state;
+      const newLevel = Math.min(state.waterLevel + 0.5, state.waterTarget);
+      let next = {
+        ...state,
+        waterLevel: parseFloat(newLevel.toFixed(1)),
+        soilMoisture: Math.min(72, state.soilMoisture + 2),
+        pumpEnergy: parseFloat((state.pumpEnergy + 0.08).toFixed(2)),
+      };
+      if (newLevel >= state.waterTarget) {
+        next = { ...next, pumpState: 'OFF', irrigationPhase: 'complete' };
+        next = addEvent(next, 'Target water level reached: ' + newLevel.toFixed(1) + ' cm', 'info');
+        next = addEvent(next, 'Pump OFF — cycle complete', 'info');
+        next = addEvent(next, 'Outcome verified — SENSE → VALIDATE → ACT ✓', 'info');
+        if (!state.cloudOnline) {
+          next = { ...next, syncPending: next.syncPending + 3 };
+        }
+      }
+      return next;
+    }
+
+    case 'START_DRY': {
+      if (state.irrigationPhase !== 'idle' && state.irrigationPhase !== 'complete') return state;
+      let next = { ...state, irrigationPhase: 'drying', waterLevel: -14.0, soilMoisture: 34 };
+      next = addEvent(next, 'Simulation: Drying scenario started', 'system');
+      return next;
+    }
+
+    case 'SIMULATE_OUTAGE': {
+      if (state.outageActive) return state;
+      let next = { ...state, cloudOnline: false, outageActive: true, syncPending: 0 };
+      next = addEvent(next, 'Internet outage simulated — cloud OFFLINE', 'critical');
+      next = addEvent(next, 'Edge controller active — local rules engaged', 'warning');
+      return next;
+    }
+
+    case 'RECONNECT_CLOUD': {
+      if (!state.outageActive) return state;
+      let next = { ...state, cloudOnline: true, outageActive: false };
+      const pending = state.syncPending;
+      next = addEvent(next, 'Cloud connection restored — ONLINE', 'info');
+      if (pending > 0) {
+        next = addEvent(next, `${pending} queued event(s) synchronized to cloud`, 'info');
+      }
+      next = { ...next, syncPending: 0 };
+      return next;
+    }
+
+    case 'TRIGGER_CROP_STRESS': {
+      let next = {
+        ...state,
+        cropStressActive: true,
+        vegTrend: -14,
+        soilMoistureField3: 21,
+        rainfall7d: 18,
+        tempElevated: true,
+        fields: state.fields.map(f => f.id === 3
+          ? { ...f, status: 'stress', moisture: 21 }
+          : f
+        )
+      };
+      next = addEvent(next, 'Crop intelligence: Potential stress detected — Field 3', 'warning');
+      next = addEvent(next, 'Satellite trend: -14% vegetation index vs trajectory', 'warning');
+      return next;
+    }
+
+    case 'REQUEST_PHOTO': {
+      let next = { ...state, photoRequested: true };
+      next = addEvent(next, 'Photo verification requested from farmer (Field 3)', 'system');
+      return next;
+    }
+
+    case 'NEW_HARVEST': {
+      let next = {
+        ...state,
+        newHarvestAdded: true,
+        storageUsed: Math.min(state.storageCapacity, state.storageUsed + 6),
+        fpoStorageAvailable: Math.max(0, state.fpoStorageAvailable - 6),
+        expectedHarvest: state.expectedHarvest + 5,
+      };
+      next = addEvent(next, 'New harvest lot recorded — 6t Tomatoes (T-043)', 'info');
+      return next;
+    }
+
+    case 'INCREASE_SOLAR': {
+      let next = { ...state, solarAvailability: Math.min(8.5, state.solarAvailability + 1.5), batteryLevel: Math.min(98, state.batteryLevel + 8) };
+      next = addEvent(next, 'Solar availability increased — pre-cooling recommended', 'info');
+      return next;
+    }
+
+    case 'RESET': {
+      const reset = {
+        ...INITIAL_STATE,
+        inspectionScheduled: false,
+        inspectionTime: '',
+        dispatchConfirmed: false,
+        dispatchTime: '',
+        showAllLots: false,
+        routeOptimised: false,
+        events: [
+          { time: new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'}), msg: 'Scenario reset — all systems nominal', type: 'system' },
+          ...INITIAL_STATE.events
+        ]
+      };
+      return reset;
+    }
+
+    case 'SCHEDULE_INSPECTION': {
+      const now = new Date();
+      const next = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 hours
+      const timeStr = next.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = 'Today · ' + timeStr;
+      let s = { ...state, inspectionScheduled: true, inspectionTime: dateStr };
+      s = addEvent(s, 'Field inspection scheduled — Field 3 · ' + dateStr, 'info');
+      return s;
+    }
+
+    case 'CONFIRM_DISPATCH': {
+      if (state.dispatchConfirmed) return state;
+      const now = new Date();
+      const ts = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      let s = { ...state, dispatchConfirmed: true, dispatchTime: ts };
+      s = addEvent(s, 'Dispatch confirmed — Lot T-042 · 5.5 t Tomatoes → Buyer Hub A', 'info');
+      s = addEvent(s, 'Vehicle dispatch scheduled · ETA: Tomorrow 10:00', 'info');
+      return s;
+    }
+
+    case 'TOGGLE_ALL_LOTS':
+      return { ...state, showAllLots: !state.showAllLots };
+
+    case 'OPTIMISE_ROUTE':
+      if (state.routeOptimised) return state;
+      // eslint-disable-next-line no-case-declarations
+      let rs = { ...state, routeOptimised: true };
+      rs = addEvent(rs, 'Route optimised — 3 stops · 42 km · ETA 10:00 at Buyer Hub A', 'info');
+      return rs;
+
+    case 'TOGGLE_ARCH':
+      return { ...state, archOpen: !state.archOpen };
+
+    default:
+      return state;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   HELPER COMPONENTS
+   ═══════════════════════════════════════════════ */
+
+function MetricCard({ label, value, unit, sub, variant, className='' }) {
+  return (
+    <div className={`metric-card ${variant||''} ${className}`}>
+      <div className="metric-label">{label}</div>
+      <div className={`metric-value ${variant==='warning'?'amber':variant==='critical'?'red':variant==='active'?'green':variant==='info'?'blue':''}`}>
+        {value}<span style={{fontSize:'0.7em',fontWeight:400,marginLeft:2}}>{unit}</span>
+      </div>
+      {sub && <div className="metric-sub">{sub}</div>}
+    </div>
+  );
+}
+
+function StatusBadge({ status, label, pulsing }) {
+  const map = { online:'green', offline:'red', active:'amber', warning:'amber', normal:'green', stress:'red', healthy:'green', critical:'red' };
+  const variant = map[status] || 'grey';
+  return (
+    <span className={`badge ${variant} ${pulsing?'pulsing':''}`}>
+      <span>●</span> {label || status}
+    </span>
+  );
+}
+
+function EventLog({ events }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) ref.current.scrollTop = 0;
+  }, [events.length]);
+  return (
+    <div className="event-log" ref={ref}>
+      {events.map((e, i) => (
+        <div key={i} className="log-entry">
+          <span className="log-time">{e.time}</span>
+          <span className={`log-msg ${e.type}`}>{e.msg}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProgressBar({ value, max=100, variant }) {
+  const pct = Math.round(Math.min(100, Math.max(0, (value/max)*100)));
+  const cls = pct > 80 ? 'red' : pct > 60 ? 'amber' : variant || '';
+  return (
+    <div className="progress-bar">
+      <div className={`progress-fill ${cls}`} style={{width: pct+'%'}} />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   SIMULATION CONTROLS
+   ═══════════════════════════════════════════════ */
+function SimControls({ state, dispatch }) {
+  const { irrigationPhase, outageActive, cloudOnline, cropStressActive } = state;
+  const isSimRunning = irrigationPhase === 'drying' || irrigationPhase === 'pumping';
+
+  return (
+    <div className="sim-controls">
+      <div className="sim-controls-header">
+        <span className="sim-controls-title">Simulation Controls</span>
+        <span className="sim-controls-badge">Demo Mode</span>
+      </div>
+      <div className="sim-btn-grid">
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() => dispatch({ type: 'START_DRY' })}
+          disabled={isSimRunning}
+          title="Gradually decrease water level until irrigation threshold is crossed"
+        >
+          ▶ Simulate Drying
+        </button>
+        <button
+          className="btn btn-warning btn-sm"
+          onClick={() => dispatch({ type: 'SIMULATE_OUTAGE' })}
+          disabled={outageActive}
+          title="Disconnect cloud — edge controller takes over"
+        >
+          📡 Simulate Outage
+        </button>
+        <button
+          className="btn btn-info btn-sm"
+          onClick={() => dispatch({ type: 'RECONNECT_CLOUD' })}
+          disabled={!outageActive}
+          title="Restore cloud connection and sync events"
+        >
+          ☁ Reconnect Cloud
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => dispatch({ type: 'TRIGGER_CROP_STRESS' })}
+          disabled={cropStressActive}
+          title="Trigger crop stress signal on Field 3"
+        >
+          🌿 Crop Stress
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => dispatch({ type: 'NEW_HARVEST' })}
+          title="Add a new harvest lot to FPO storage"
+        >
+          📦 New Harvest
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => dispatch({ type: 'INCREASE_SOLAR' })}
+          title="Increase solar availability in AFRO Store"
+        >
+          ☀ Boost Solar
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => dispatch({ type: 'RESET' })}
+          title="Reset all simulation state"
+        >
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   FIELD MAP
+   ═══════════════════════════════════════════════ */
+function FieldMap({ fields, activeField }) {
+  const statusClass = { healthy:'healthy', stress:'warning', warning:'warning', active:'active' };
+  const statusLabel = { healthy:'Healthy', stress:'Attention', warning:'Attention', active:'Irrigating' };
+  return (
+    <div className="field-map-container">
+      <div className="field-map-title">Field Layout — 1.6 ha</div>
+      <div className="field-map-grid">
+        {fields.map(f => (
+          <div key={f.id} className={`field-zone ${statusClass[f.status]||'healthy'} ${activeField===f.id?'active':''}`}>
+            <div>
+              <div className="field-name">{f.name}</div>
+              <div className="field-status-text">{f.area} · {statusLabel[f.status]||'Normal'}</div>
+            </div>
+            <div>
+              <div style={{fontSize:'0.62rem',color:'rgba(255,255,255,0.35)',marginBottom:3}}>Soil moisture</div>
+              <div className="field-moisture-bar">
+                <div
+                  className={`field-moisture-fill ${f.moisture<30?'critical':f.moisture<50?'low':''}`}
+                  style={{width: f.moisture+'%'}}
+                />
+              </div>
+              <div style={{fontSize:'0.62rem',color:'rgba(255,255,255,0.5)',marginTop:2}}>{f.moisture}%</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   WATER LEVEL VISUALIZATION
+   ═══════════════════════════════════════════════ */
+function WaterLevelViz({ waterLevel, threshold, pumpState }) {
+  // map -20..0 to 0..100%
+  const toHeight = (v) => Math.max(5, Math.min(95, ((v + 20) / 20) * 100));
+  const fillH = toHeight(waterLevel);
+  const thresholdH = toHeight(threshold);
+
+  return (
+    <div>
+      <div className="water-level-viz">
+        <div className="water-fill" style={{ height: fillH + '%' }}>
+          <div className="water-surface" />
+        </div>
+        <div
+          className="water-threshold-line"
+          style={{ bottom: thresholdH + '%' }}
+        >
+          <span className="water-threshold-label" style={{bottom: '2px'}}>Threshold {threshold} cm</span>
+        </div>
+        <div className="water-label-overlay">
+          <div className="water-level-value">{waterLevel.toFixed(1)}</div>
+          <div className="water-level-unit">cm (water table)</div>
+        </div>
+        <div className={`water-pump-indicator ${pumpState==='ON'?'on':'off'}`}>
+          {pumpState==='ON' ? <span className="spinning">⚙</span> : '⚙'} Pump {pumpState}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   DECISION PANEL
+   ═══════════════════════════════════════════════ */
+function DecisionPanel({ state }) {
+  const { waterLevel, waterThreshold, pumpState, irrigationPhase, cloudOnline, edgeOnline } = state;
+
+  const getDecision = () => {
+    if (irrigationPhase === 'drying' && waterLevel > waterThreshold)
+      return { text: 'Monitoring — wait for threshold', border: '', output: 'Monitor' };
+    if (irrigationPhase === 'threshold-crossed')
+      return { text: 'Irrigation required', border: 'warning-border', output: 'Irrigation Required' };
+    if (irrigationPhase === 'pumping')
+      return { text: 'Irrigation in progress — pump active', border: 'warning-border', output: 'Pump ON' };
+    if (irrigationPhase === 'complete')
+      return { text: 'Irrigation cycle complete — outcome verified', border: '', output: 'Verified ✓' };
+    return { text: 'Wait — conditions within range', border: '', output: 'No Action Required' };
+  };
+
+  const decision = getDecision();
+  const authority = cloudOnline ? 'CLOUD + EDGE' : 'LOCAL EDGE';
+
+  return (
+    <div className="decision-panel">
+      <div className="decision-title">AFRO Decision Engine</div>
+
+      <div className="decision-section">
+        <div className="decision-section-label">Current Condition</div>
+        <div className="decision-row">
+          <span className="decision-key">Water level</span>
+          <span className={`decision-val ${waterLevel <= waterThreshold ? 'critical' : ''}`}>{waterLevel.toFixed(1)} cm</span>
+        </div>
+        <div className="decision-row">
+          <span className="decision-key">Threshold</span>
+          <span className="decision-val">{waterThreshold} cm</span>
+        </div>
+        <div className="decision-row">
+          <span className="decision-key">Pump</span>
+          <span className={`decision-val ${pumpState==='ON'?'good':''}`}>{pumpState}</span>
+        </div>
+      </div>
+
+      <hr className="decision-divider" />
+
+      <div className={`decision-output ${decision.border}`}>
+        <div className="decision-output-label">Decision</div>
+        <div className="decision-output-text">{decision.output}</div>
+      </div>
+
+      <hr className="decision-divider" />
+
+      <div className="decision-section">
+        <div className="decision-section-label">Safety</div>
+        <div className="decision-row">
+          <span className="decision-key">Hardware</span>
+          <span className="decision-val good">Protected</span>
+        </div>
+        <div className="decision-row">
+          <span className="decision-key">Sensors</span>
+          <span className="decision-val good">Active</span>
+        </div>
+      </div>
+
+      <div className="decision-authority">
+        <span>Authority:</span>
+        {cloudOnline
+          ? <span className="authority-badge cloud">Cloud</span>
+          : null}
+        <span className="authority-badge edge">Edge</span>
+        <span className="authority-badge hw">HW Protect</span>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   OFFLINE BANNER
+   ═══════════════════════════════════════════════ */
+function OfflineBanner({ state }) {
+  if (state.cloudOnline) return null;
+  return (
+    <div className="offline-banner">
+      <span className="offline-banner-icon">🔴</span>
+      <div>
+        <strong>Cloud connection unavailable</strong> — Local edge control active.
+        Irrigation decisions continue via onboard rules.
+      </div>
+      <div className="offline-banner-detail">
+        {state.syncPending > 0 ? `${state.syncPending} event(s) queued for sync` : 'Events queued for sync on reconnect'}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   ARCHITECTURE PANEL
+   ═══════════════════════════════════════════════ */
+function ArchPanel({ state, dispatch }) {
+  return (
+    <div className="arch-section">
+      <button className="arch-toggle" onClick={() => dispatch({ type: 'TOGGLE_ARCH' })}>
+        <span>⬡ How AFRO Works — Architecture Overview</span>
+        <span>{state.archOpen ? '▲' : '▼'}</span>
+      </button>
+      {state.archOpen && (
+        <div className="arch-body fade-in">
+          <div className="arch-columns">
+            {/* Col 1 */}
+            <div>
+              <div className="arch-col-title">Data Flow</div>
+              <div className="arch-node"><span>🌡</span> Field Sensors</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node highlight"><span>⚡</span> Edge Controller</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node primary"><span>🧠</span> AFRO Decision Engine</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node"><span>👨‍🌾</span> Farmer / FPO</div>
+            </div>
+            {/* Col 2 */}
+            <div>
+              <div className="arch-col-title">Intelligence Inputs</div>
+              <div className="arch-node"><span>🛰</span> Satellite Imagery</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node"><span>🌦</span> Weather Context</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node"><span>📦</span> Storage Data</div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-node highlight"><span>📊</span> AFRO Intelligence</div>
+            </div>
+            {/* Col 3 */}
+            <div>
+              <div className="arch-col-title">Modules</div>
+              {['AFRO Field — Irrigation','AFRO Intelligence — Crop Health','AFRO Store — Storage','AFRO Flow — Logistics','AFRO Network — FPO'].map((m,i) => (
+                <div key={i} className="arch-node" style={{marginBottom:6}}><span>◈</span> {m}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{marginTop:16}}>
+            <div className="arch-col-title" style={{marginBottom:8}}>Core Design Principle</div>
+            <div className="arch-principle">
+              <div className="arch-principle-item cloud">☁ Cloud Recommends</div>
+              <div className="arch-principle-item edge">⚡ Edge Decides</div>
+              <div className="arch-principle-item hw">🔩 Hardware Protects</div>
+            </div>
+          </div>
+          <div style={{marginTop:12,fontSize:'0.68rem',color:'var(--muted)',fontStyle:'italic'}}>
+            Note: This prototype simulates AFRO's decision logic. Hardware control, satellite imagery, and cloud services are represented by local simulation only.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD PAGE
+   ═══════════════════════════════════════════════ */
+function DashboardPage({ state, dispatch }) {
+  const { waterLevel, soilMoisture, pumpState, pumpEnergy, fields, cloudOnline, edgeOnline, irrigationPhase } = state;
+
+  return (
+    <div className="page">
+      {/* Farm header */}
+      <div className="mb-16">
+        <div className="farm-overview">
+          <div>
+            <div className="farm-title">{state.farmName}</div>
+            <div style={{fontSize:'0.72rem',color:'rgba(255,255,255,0.4)',marginTop:2}}>Paddy Cultivation Season · Kharif 2026</div>
+          </div>
+          <div className="farm-meta">
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Area</div>
+              <div className="farm-meta-val">{state.farmArea}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Crop</div>
+              <div className="farm-meta-val">{state.crop}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Mode</div>
+              <div className="farm-meta-val">{state.mode}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Edge</div>
+              <div className="farm-meta-val" style={{color:'#6ed86e'}}>ONLINE</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Cloud</div>
+              <div className="farm-meta-val" style={{color: cloudOnline ? '#6ed86e' : 'var(--red-lt)'}}>
+                {cloudOnline ? 'ONLINE' : 'OFFLINE'}
+              </div>
+            </div>
+          </div>
+          <div className="farm-mode-badge">AUTO MODE</div>
+        </div>
+      </div>
+
+      {/* Metrics row */}
+      <div className="mb-16">
+        <div className="section-title">Live Metrics <span className="sim-tag">simulated</span></div>
+        <div className="metrics-grid">
+          <MetricCard
+            label="Water Level"
+            value={waterLevel.toFixed(1)}
+            unit="cm"
+            sub={waterLevel <= -15 ? '⚠ Below threshold' : 'Within range'}
+            variant={waterLevel <= -15 ? 'critical' : waterLevel <= -13 ? 'warning' : ''}
+          />
+          <MetricCard
+            label="Soil Moisture"
+            value={soilMoisture}
+            unit="%"
+            sub={soilMoisture < 25 ? '⚠ Low' : 'Adequate'}
+            variant={soilMoisture < 25 ? 'warning' : ''}
+          />
+          <MetricCard
+            label="Pump"
+            value={pumpState}
+            sub={pumpState === 'ON' ? 'Irrigating' : 'Standby'}
+            variant={pumpState === 'ON' ? 'active' : ''}
+          />
+          <MetricCard
+            label="Today's Energy"
+            value={pumpEnergy}
+            unit="kWh"
+            sub="Solar + Grid"
+            variant="info"
+          />
+          <MetricCard
+            label="Water Saving"
+            value="32"
+            unit="%"
+            sub="Target (pilot)"
+            variant=""
+          />
+          <MetricCard
+            label="Phase"
+            value={irrigationPhase === 'idle' ? 'Standby' : irrigationPhase === 'drying' ? 'Drying' : irrigationPhase === 'pumping' ? 'Pumping' : irrigationPhase === 'complete' ? 'Complete' : irrigationPhase}
+            sub="Irrigation cycle"
+            variant={irrigationPhase === 'pumping' ? 'active' : irrigationPhase === 'threshold-crossed' ? 'critical' : ''}
+          />
+        </div>
+      </div>
+
+      <div className="grid-2 mb-16">
+        {/* Field map */}
+        <div>
+          <div className="section-title">Field Map</div>
+          <FieldMap fields={fields} activeField={pumpState==='ON'?1:null} />
+        </div>
+
+        {/* Water level viz */}
+        <div>
+          <div className="section-title">Water Table Depth</div>
+          <WaterLevelViz waterLevel={waterLevel} threshold={-15} pumpState={pumpState} />
+          <div style={{marginTop:8,fontSize:'0.68rem',color:'var(--muted)'}}>
+            Negative values = depth below surface. Threshold: −15 cm. Target: −12 cm.
+            <span className="sim-tag">simulated</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2 mb-16">
+        {/* Decision panel */}
+        <div>
+          <div className="section-title">AFRO Decision Engine</div>
+          <DecisionPanel state={state} />
+        </div>
+
+        {/* Event log */}
+        <div>
+          <div className="section-title flex-between">
+            <span>Event Log</span>
+            <span className="text-xs text-muted font-mono">Live</span>
+          </div>
+          <EventLog events={state.events} />
+        </div>
+      </div>
+
+      {/* Sim controls */}
+      <div className="mb-16">
+        <SimControls state={state} dispatch={dispatch} />
+      </div>
+
+      {/* Targets box */}
+      <div className="mb-16">
+        <div className="target-box">
+          <div className="target-title">Pilot Design Targets <span className="sim-tag">to be validated</span></div>
+          <div className="target-row">
+            <span className="target-metric">Irrigation water</span>
+            <div className="target-values">
+              <span className="target-baseline">Baseline: 12.5M L/ha</span>
+              <span className="target-goal">Target: 8.5M L/ha <span className="target-tag">target</span></span>
+            </div>
+          </div>
+          <div className="target-row">
+            <span className="target-metric">Energy consumption</span>
+            <div className="target-values">
+              <span className="target-baseline">Baseline: 1,450 kWh/ha</span>
+              <span className="target-goal">Target: 1,000 kWh/ha <span className="target-tag">target</span></span>
+            </div>
+          </div>
+          <div className="target-row">
+            <span className="target-metric">Post-harvest storage loss</span>
+            <div className="target-values">
+              <span className="target-baseline">Baseline: 18%</span>
+              <span className="target-goal">Pilot target: {'<'}3% <span className="target-tag">target</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Arch panel */}
+      <ArchPanel state={state} dispatch={dispatch} />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   CROP HEALTH PAGE
+   ═══════════════════════════════════════════════ */
+function CropHealthPage({ state, dispatch }) {
+  const { cropStressActive, photoRequested, vegTrend, soilMoistureField3, rainfall7d, tempElevated,
+          inspectionScheduled, inspectionTime } = state;
+
+  const zones = [
+    { id:1, name:'Field 1 — North', status:'normal', ndvi:'+2%', smi:'72%', stage:'Tillering', note:'On expected trajectory' },
+    { id:2, name:'Field 2 — Central', status:'normal', ndvi:'+1%', smi:'68%', stage:'Tillering', note:'On expected trajectory' },
+    {
+      id:3,
+      name:'Field 3 — South',
+      status: cropStressActive ? 'stress' : 'normal',
+      ndvi: cropStressActive ? vegTrend+'%' : '+1%',
+      smi: cropStressActive ? soilMoistureField3+'%' : '52%',
+      stage:'Tillering',
+      note: cropStressActive ? 'Potential stress — verify' : 'On expected trajectory'
+    },
+  ];
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-row">
+          <div>
+            <div className="page-title">Crop Health Intelligence</div>
+            <div className="page-subtitle">Satellite trend · Field sensor context · Weather integration</div>
+          </div>
+          <div className="flex-row">
+            {cropStressActive && <StatusBadge status="warning" label="Stress Signal Active" pulsing />}
+            <button className="btn btn-secondary btn-sm" onClick={() => dispatch({ type: 'TRIGGER_CROP_STRESS' })} disabled={cropStressActive}>
+              🌿 Simulate Stress
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Zone map */}
+      <div className="mb-16">
+        <div className="section-title">Field Zone Overview</div>
+        <div className="zone-map">
+          {zones.map(z => (
+            <div key={z.id} className={`zone-card ${z.status}`}>
+              <div className="flex-between mb-8">
+                <div className="zone-name">{z.name}</div>
+                <StatusBadge status={z.status==='stress'?'warning':'normal'} label={z.status==='stress'?'Attention':'Normal'} pulsing={z.status==='stress'} />
+              </div>
+              <div className="zone-mini-stats">
+                <div className="zone-mini-stat">
+                  <span className="zone-mini-label">Veg. trend</span>
+                  <span className={`zone-mini-val ${z.ndvi.startsWith('-')?'neg':''}`}>{z.ndvi} vs expected</span>
+                </div>
+                <div className="zone-mini-stat">
+                  <span className="zone-mini-label">Soil moisture</span>
+                  <span className={`zone-mini-val ${parseInt(z.smi)<30?'low':''}`}>{z.smi}</span>
+                </div>
+                <div className="zone-mini-stat">
+                  <span className="zone-mini-label">Crop stage</span>
+                  <span className="zone-mini-val">{z.stage}</span>
+                </div>
+                <div className="zone-mini-stat">
+                  <span className="zone-mini-label">Status</span>
+                  <span className={`zone-mini-val ${z.status==='stress'?'high':''}`}>{z.note}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Assessment panel */}
+      {cropStressActive && (
+        <div className="mb-16 fade-in">
+          <div className="section-title">AFRO Assessment — Field 3</div>
+          <div className="assessment-card">
+            <div className="assessment-header">
+              <span className="assessment-icon">⚠</span>
+              <div>
+                <div className="assessment-title">Possible Water / Heat Stress — Field Verification Required</div>
+                <div className="assessment-confidence">Confidence: Moderate · Multi-signal convergence</div>
+              </div>
+            </div>
+
+            <div className="assessment-factors">
+              <div className="assessment-factor">
+                <div className="factor-label">Vegetation Index Trend</div>
+                <div className="factor-val" style={{color:'var(--red)'}}>{vegTrend}% vs expected trajectory <span className="sim-tag">simulated</span></div>
+              </div>
+              <div className="assessment-factor">
+                <div className="factor-label">Soil Moisture (Field 3)</div>
+                <div className="factor-val" style={{color:'var(--amber)'}}>{soilMoistureField3}% — Low</div>
+              </div>
+              <div className="assessment-factor">
+                <div className="factor-label">Rainfall (7 days)</div>
+                <div className="factor-val">{rainfall7d} mm — Below seasonal average</div>
+              </div>
+              <div className="assessment-factor">
+                <div className="factor-label">Temperature</div>
+                <div className="factor-val" style={{color:'var(--red)'}}>Elevated — 3.2°C above 10-day avg <span className="sim-tag">simulated</span></div>
+              </div>
+              <div className="assessment-factor">
+                <div className="factor-label">Crop Stage</div>
+                <div className="factor-val">Tillering — high water sensitivity period</div>
+              </div>
+              <div className="assessment-factor">
+                <div className="factor-label">AFRO Assessment</div>
+                <div className="factor-val" style={{color:'var(--amber)'}}>Possible water / heat stress</div>
+              </div>
+            </div>
+
+            <div className="disclaimer">
+              AFRO provides early-warning signals derived from simulated satellite vegetation trends, field sensor data, and weather context. It does not directly diagnose crop disease from satellite imagery. All alerts require field verification before action.
+            </div>
+
+            <div style={{marginTop:14,display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
+              {!photoRequested ? (
+                <button className="btn btn-warning" onClick={() => dispatch({ type: 'REQUEST_PHOTO' })}>
+                  📷 Request Farmer Photo Verification
+                </button>
+              ) : (
+                <div className="flex-row">
+                  <StatusBadge status="warning" label="Photo Requested" pulsing />
+                  <span className="text-sm text-muted">Awaiting field verification from farmer — Field 3</span>
+                </div>
+              )}
+              {!inspectionScheduled ? (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => dispatch({ type: 'SCHEDULE_INSPECTION' })}
+                >
+                  📋 Schedule Field Inspection
+                </button>
+              ) : (
+                <div style={{
+                  display:'flex', alignItems:'center', gap:10,
+                  background:'#f0f8f0', border:'1px solid #c0dcc0',
+                  borderRadius:'var(--radius-md)', padding:'8px 14px',
+                  fontSize:'0.78rem', color:'var(--green-md)', fontWeight:600,
+                }}>
+                  <span style={{fontSize:'1rem'}}>✅</span>
+                  <div>
+                    <div>Field inspection scheduled — Field 3</div>
+                    <div style={{fontWeight:400, fontSize:'0.68rem', color:'var(--muted)', marginTop:2}}>
+                      Scheduled: {inspectionTime} · Agronomist assigned
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Context panel */}
+      <div className="grid-2 mb-16">
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Weather Context <span className="sim-tag">simulated</span></span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Rainfall (7d)', '18 mm', ''],
+                ['Max temp (today)', tempElevated ? '38.4°C' : '34.1°C', tempElevated ? 'amber' : ''],
+                ['Humidity', '52%', ''],
+                ['Evapotranspiration', '5.2 mm/day', 'amber'],
+                ['Next forecast rain', '3–4 days', ''],
+              ].map(([k,v,c]) => (
+                <div key={k} className="flex-between" style={{padding:'5px 0',borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className={`text-sm font-bold ${c==='amber'?'text-amber':''}`}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Crop Stage Context</span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Current stage','Tillering'],
+                ['Days since transplant','22 days'],
+                ['Expected heading','42 days'],
+                ['Water requirement','High — 8–10 mm/day'],
+                ['Sensitivity','Critical period'],
+              ].map(([k,v]) => (
+                <div key={k} className="flex-between" style={{padding:'5px 0',borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className="text-sm font-bold">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Architecture note */}
+      <div className="target-box">
+        <div className="target-title">Intelligence Architecture</div>
+        <div style={{fontSize:'0.72rem',color:'var(--slate)',lineHeight:1.8}}>
+          AFRO Intelligence aggregates simulated satellite vegetation indices, ground-truth sensor readings, and weather model context. Signals converge into an early-warning assessment for the farmer or FPO agronomist. Field verification is always required before agronomic action. <span className="sim-tag">illustrative</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   STORE PAGE
+   ═══════════════════════════════════════════════ */
+function StorePage({ state, dispatch }) {
+  const { storageTemp, storageHumidity, solarAvailability, batteryLevel, storageUsed, storageCapacity, qualityRiskHours, lotId, lotCrop, buyerDeadline } = state;
+  const storagePercent = Math.round((storageUsed / storageCapacity) * 100);
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-row">
+          <div>
+            <div className="page-title">AFRO Store</div>
+            <div className="page-subtitle">Farm-gate storage intelligence · Quality-risk monitoring</div>
+          </div>
+          <div className="flex-row gap-8">
+            <button className="btn btn-secondary btn-sm" onClick={() => dispatch({ type: 'INCREASE_SOLAR' })}>☀ Boost Solar</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => dispatch({ type: 'NEW_HARVEST' })}>📦 New Harvest</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Storage metrics */}
+      <div className="mb-16">
+        <div className="section-title">Storage Environment <span className="sim-tag">simulated</span></div>
+        <div className="storage-visual">
+          <div className="storage-metric">
+            <div className="storage-metric-icon">🌡</div>
+            <div className="storage-metric-val">{storageTemp.toFixed(1)}°C</div>
+            <div className="storage-metric-label">Temperature</div>
+          </div>
+          <div className="storage-metric">
+            <div className="storage-metric-icon">💧</div>
+            <div className="storage-metric-val">{storageHumidity}%</div>
+            <div className="storage-metric-label">Humidity</div>
+          </div>
+          <div className="storage-metric">
+            <div className="storage-metric-icon">☀</div>
+            <div className="storage-metric-val">{solarAvailability.toFixed(1)} kW</div>
+            <div className="storage-metric-label">Solar Available</div>
+          </div>
+          <div className="storage-metric">
+            <div className="storage-metric-icon">🔋</div>
+            <div className="storage-metric-val">{batteryLevel}%</div>
+            <div className="storage-metric-label">Battery</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2 mb-16">
+        {/* Storage capacity */}
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Capacity</span>
+            <StatusBadge status={storagePercent > 90 ? 'warning' : 'normal'} label={storagePercent+'% used'} />
+          </div>
+          <div className="card-body">
+            <div style={{fontSize:'1.6rem',fontWeight:700,color:'var(--charcoal)',marginBottom:8}}>
+              {storageUsed} <span style={{fontSize:'0.9rem',fontWeight:400,color:'var(--muted)'}}>/ {storageCapacity} t</span>
+            </div>
+            <ProgressBar value={storageUsed} max={storageCapacity} />
+            <div className="flex-between mt-8">
+              <span className="text-xs text-muted">Available: {storageCapacity - storageUsed} t</span>
+              <span className="text-xs text-muted">Capacity: {storageCapacity} t</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quality risk */}
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Quality Risk Window</span>
+            <StatusBadge status="warning" label="Active" pulsing />
+          </div>
+          <div className="card-body">
+            <div style={{fontSize:'1.6rem',fontWeight:700,color:'var(--amber)',marginBottom:4}}>
+              {qualityRiskHours} h
+            </div>
+            <div className="text-sm text-muted" style={{marginBottom:10}}>Until quality degradation risk increases</div>
+            <ProgressBar value={qualityRiskHours} max={48} variant="amber" />
+            <div className="text-xs text-muted mt-8">Based on current temperature · humidity · crop type <span className="sim-tag">simulated</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Lot card */}
+      <div className="mb-16">
+        <div className="section-title">Active Priority Lot</div>
+        <div className="lot-card">
+          <div className="lot-header">
+            <div className="lot-id">{lotId}</div>
+            <div className="flex-row gap-8">
+              <StatusBadge status="warning" label="Dispatch Priority" />
+              <span className="badge amber">FEFO</span>
+            </div>
+          </div>
+          <div className="lot-details">
+            <div className="lot-detail">
+              <div className="lot-detail-label">Crop</div>
+              <div className="lot-detail-val">{lotCrop}</div>
+            </div>
+            <div className="lot-detail">
+              <div className="lot-detail-label">Quantity</div>
+              <div className="lot-detail-val">5.5 t</div>
+            </div>
+            <div className="lot-detail">
+              <div className="lot-detail-label">Buyer Deadline</div>
+              <div className="lot-detail-val" style={{color:'var(--amber)'}}>{buyerDeadline}</div>
+            </div>
+            <div className="lot-detail">
+              <div className="lot-detail-label">Temperature</div>
+              <div className="lot-detail-val">{storageTemp.toFixed(1)}°C</div>
+            </div>
+            <div className="lot-detail">
+              <div className="lot-detail-label">Quality Status</div>
+              <div className="lot-detail-val" style={{color:'var(--amber)'}}>Monitor closely</div>
+            </div>
+            <div className="lot-detail">
+              <div className="lot-detail-label">Dispatch Priority</div>
+              <div className="lot-detail-val">1st — Earliest expiry</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      <div className="mb-16">
+        <div className="section-title">AFRO Recommendations</div>
+        <div className="flex-col gap-8">
+          <div className="recommendation-card">
+            <span className="rec-icon">☀</span>
+            <div className="rec-body">
+              <div className="rec-action">Pre-cool now while solar availability is high</div>
+              <div className="rec-reason">Solar: {solarAvailability.toFixed(1)} kW available · Battery: {batteryLevel}% · Grid cost avoidance window open</div>
+              <span className="rec-tag">Energy Optimised</span>
+            </div>
+          </div>
+          <div className="recommendation-card">
+            <span className="rec-icon">📦</span>
+            <div className="rec-body">
+              <div className="rec-action">Dispatch Lot {lotId} first — {buyerDeadline}</div>
+              <div className="rec-reason">Earliest quality deadline in inventory — buyer confirmed</div>
+              <span className="rec-tag">FEFO — First Expire, First Out</span>
+            </div>
+          </div>
+          <div className="recommendation-card">
+            <span className="rec-icon">🔋</span>
+            <div className="rec-body">
+              <div className="rec-action">Charge storage battery to peak before 18:00</div>
+              <div className="rec-reason">Solar generation forecast: high until 16:30 · Evening grid rate elevated</div>
+              <span className="rec-tag">Cost Optimisation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Target panel */}
+      <div className="target-box">
+        <div className="target-title">Pilot Storage Targets <span className="sim-tag">illustrative</span></div>
+        <div className="target-row">
+          <span className="target-metric">Post-harvest loss rate</span>
+          <div className="target-values">
+            <span className="target-baseline">Baseline: 18%</span>
+            <span className="target-goal">Pilot target: {'<'}3% <span className="target-tag">target</span></span>
+          </div>
+        </div>
+        <div className="target-row">
+          <span className="target-metric">Cold-chain energy cost</span>
+          <div className="target-values">
+            <span className="target-baseline">Grid-only baseline</span>
+            <span className="target-goal">30% solar offset target <span className="target-tag">target</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   FPO NETWORK PAGE
+   ═══════════════════════════════════════════════ */
+function FPOPage({ state, dispatch }) {
+  const { activeFarmers, totalFarmers, expectedHarvest, fpoStorageCapacity, fpoStorageAvailable, buyerDemand,
+          dispatchConfirmed, dispatchTime, showAllLots, routeOptimised } = state;
+  const storageUsed = fpoStorageCapacity - fpoStorageAvailable;
+  const gap = buyerDemand - storageUsed;
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-row">
+          <div>
+            <div className="page-title">AFRO Network</div>
+            <div className="page-subtitle">FPO Command Centre · Cooperative aggregation & market coordination</div>
+          </div>
+          <div className="flex-row gap-8">
+            <button className="btn btn-secondary btn-sm" onClick={() => dispatch({ type: 'NEW_HARVEST' })}>📦 Add Harvest</button>
+          </div>
+        </div>
+      </div>
+
+      {/* FPO metrics */}
+      <div className="mb-16">
+        <div className="section-title">FPO Overview <span className="sim-tag">simulated</span></div>
+        <div className="fpo-metrics">
+          <MetricCard label="Active Farmers" value={`${activeFarmers}/${totalFarmers}`} sub="Members reporting" variant="" />
+          <MetricCard label="Expected Harvest" value={expectedHarvest} unit="t" sub="This season" variant="info" />
+          <MetricCard label="Storage Capacity" value={fpoStorageCapacity} unit="t" sub="Collective" variant="" />
+          <MetricCard label="Available Storage" value={fpoStorageAvailable} unit="t" sub={fpoStorageAvailable < 10 ? '⚠ Running low' : 'Adequate'} variant={fpoStorageAvailable < 10 ? 'warning' : ''} />
+          <MetricCard label="Buyer Demand" value={buyerDemand} unit="t" sub="Confirmed orders" variant="active" />
+        </div>
+      </div>
+
+      {/* Supply-demand visualization */}
+      <div className="mb-16">
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Supply–Demand Balance <span className="sim-tag">simulated</span></span>
+            <StatusBadge status={gap > 0 ? 'warning' : 'normal'} label={gap > 0 ? `${gap}t shortfall` : 'Demand covered'} />
+          </div>
+          <div className="card-body">
+            <div className="supply-demand-bar">
+              {[
+                { label: 'Expected harvest', value: expectedHarvest, max: 100, color: '#5a8f5a' },
+                { label: 'Storage capacity', value: fpoStorageCapacity, max: 100, color: '#4a90d0' },
+                { label: 'Current storage', value: storageUsed, max: 100, color: '#7aad7a' },
+                { label: 'Buyer demand', value: buyerDemand, max: 100, color: '#c4841a' },
+              ].map(row => (
+                <div key={row.label} className="sd-row">
+                  <span className="sd-label">{row.label}</span>
+                  <div className="sd-bar-track">
+                    <div className="sd-bar-fill" style={{width: (row.value/row.max*100)+'%', background: row.color}} />
+                  </div>
+                  <span className="sd-val">{row.value} t</span>
+                </div>
+              ))}
+            </div>
+            {gap > 0 && (
+              <div style={{marginTop:12,padding:'8px 12px',background:'var(--amber-bg)',border:'1px solid #f0d090',borderRadius:'var(--radius)',fontSize:'0.75rem',color:'var(--amber)'}}>
+                ⚠ Harvest aggregation gap: {gap} t · Coordinate with neighbouring FPO or adjust dispatch schedule
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Dispatch recommendation */}
+      <div className="mb-16">
+        <div className="section-title">Recommended Dispatch</div>
+        <div className="dispatch-card">
+          <div className="dispatch-header">
+            <div>
+              <div className="dispatch-title">Dispatch Order — Priority 1</div>
+              <div className="dispatch-subtitle">Generated by AFRO Flow · FEFO + capacity optimisation</div>
+            </div>
+            <StatusBadge status={dispatchConfirmed ? 'normal' : 'active'} label={dispatchConfirmed ? 'Dispatched ✓' : 'Ready to Dispatch'} pulsing={!dispatchConfirmed} />
+          </div>
+
+          <div className="dispatch-grid">
+            <div>
+              <div className="dispatch-item-label">Lot</div>
+              <div className="dispatch-item-val">T-042</div>
+            </div>
+            <div>
+              <div className="dispatch-item-label">Crop</div>
+              <div className="dispatch-item-val">Tomatoes</div>
+            </div>
+            <div>
+              <div className="dispatch-item-label">Quantity</div>
+              <div className="dispatch-item-val">5.5 t</div>
+            </div>
+            <div>
+              <div className="dispatch-item-label">Destination</div>
+              <div className="dispatch-item-val">Buyer Hub A</div>
+            </div>
+            <div>
+              <div className="dispatch-item-label">Vehicle</div>
+              <div className="dispatch-item-val">6 t capacity</div>
+            </div>
+            <div>
+              <div className="dispatch-item-label">Utilisation</div>
+              <div className="dispatch-item-val" style={{color:'#6ed86e'}}>92%</div>
+            </div>
+          </div>
+
+          <div className="util-bar-wrap">
+            <div className="util-bar-label">
+              <span>Vehicle utilisation</span><span>92%</span>
+            </div>
+            <div className="util-bar-track">
+              <div className="util-bar-fill" style={{width:'92%'}} />
+            </div>
+          </div>
+
+          <div className="dispatch-reason" style={{marginTop:12}}>
+            Reason: Lot T-042 has the earliest quality deadline in inventory (Tomorrow · 10:00). Dispatch now maximises buyer freshness score and avoids post-harvest quality risk.
+            <span className="rec-tag" style={{marginLeft:8}}>FEFO Priority</span>
+          </div>
+
+          <div className="process-chain" style={{marginTop:16}}>
+            <div className="process-step active-step">
+              <div className="process-step-num">Step 1</div>
+              <div className="process-step-name">AGGREGATE</div>
+            </div>
+            <div className="process-arrow">→</div>
+            <div className="process-step active-step">
+              <div className="process-step-num">Step 2</div>
+              <div className="process-step-name">ALLOCATE</div>
+            </div>
+            <div className="process-arrow">→</div>
+            <div className="process-step active-step">
+              <div className="process-step-num">Step 3</div>
+              <div className="process-step-name">DISPATCH</div>
+            </div>
+          </div>
+
+          <div style={{marginTop:16,display:'flex',gap:10,flexWrap:'wrap',alignItems:'center'}}>
+            {!dispatchConfirmed ? (
+              <button
+                className="btn btn-primary"
+                onClick={() => dispatch({ type: 'CONFIRM_DISPATCH' })}
+              >
+                Confirm Dispatch
+              </button>
+            ) : (
+              <div style={{
+                display:'flex',alignItems:'center',gap:10,
+                background:'#f0f8f0',border:'1px solid #c0dcc0',
+                borderRadius:'var(--radius-md)',padding:'8px 14px',
+                fontSize:'0.78rem',color:'var(--green-md)',fontWeight:600,
+              }}>
+                <span>✅</span>
+                <div>
+                  <div>Dispatch confirmed — Lot T-042 · 5.5 t</div>
+                  <div style={{fontWeight:400,fontSize:'0.68rem',color:'var(--muted)',marginTop:2}}>
+                    Confirmed at {dispatchTime} · Vehicle en route to Buyer Hub A
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button
+              className="btn btn-secondary"
+              onClick={() => dispatch({ type: 'TOGGLE_ALL_LOTS' })}
+            >
+              {showAllLots ? 'Hide Lots ▲' : 'View All Lots'}
+            </button>
+
+            {!routeOptimised ? (
+              <button
+                className="btn btn-ghost"
+                onClick={() => dispatch({ type: 'OPTIMISE_ROUTE' })}
+              >
+                Optimise Route
+              </button>
+            ) : (
+              <div style={{
+                display:'flex',alignItems:'center',gap:8,
+                background:'var(--blue-bg)',border:'1px solid #c0d8f0',
+                borderRadius:'var(--radius-md)',padding:'7px 12px',
+                fontSize:'0.75rem',color:'var(--blue)',fontWeight:600,
+              }}>
+                <span>🗺</span> Route optimised — 3 stops · 42 km · ETA 10:00
+              </div>
+            )}
+          </div>
+
+          {/* All Lots panel — toggled by View All Lots */}
+          {showAllLots && (
+            <div className="fade-in" style={{
+              marginTop:16,background:'rgba(255,255,255,0.06)',
+              borderRadius:'var(--radius-md)',padding:'14px',
+              border:'1px solid rgba(255,255,255,0.12)',
+            }}>
+              <div style={{fontSize:'0.65rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'rgba(255,255,255,0.4)',marginBottom:10}}>
+                Inventory — All Active Lots
+              </div>
+              {[
+                { id:'T-042', crop:'Tomatoes', qty:'5.5 t', deadline:'Tomorrow 10:00', status:'Dispatch Priority', statusColor:'#f0a832' },
+                { id:'T-041', crop:'Tomatoes', qty:'3.2 t', deadline:'Tomorrow 14:00', status:'Scheduled',         statusColor:'#6ed86e' },
+                { id:'P-018', crop:'Paddy',    qty:'12 t',  deadline:'Dec 15',         status:'In Storage',        statusColor:'#4a90d0' },
+                { id:'P-017', crop:'Paddy',    qty:'8.5 t', deadline:'Dec 15',         status:'In Storage',        statusColor:'#4a90d0' },
+                { id:'T-040', crop:'Tomatoes', qty:'4.1 t', deadline:'Dispatched',      status:'Delivered ✓',      statusColor:'rgba(255,255,255,0.4)' },
+              ].map(lot => (
+                <div key={lot.id} style={{
+                  display:'flex',alignItems:'center',justifyContent:'space-between',
+                  padding:'7px 0',borderBottom:'1px solid rgba(255,255,255,0.07)',
+                  fontSize:'0.75rem',flexWrap:'wrap',gap:6,
+                }}>
+                  <span style={{fontFamily:'Consolas,monospace',fontWeight:700,color:'white',width:50}}>{lot.id}</span>
+                  <span style={{color:'rgba(255,255,255,0.6)',width:70}}>{lot.crop}</span>
+                  <span style={{color:'rgba(255,255,255,0.8)',fontWeight:600,width:50}}>{lot.qty}</span>
+                  <span style={{color:'rgba(255,255,255,0.5)',width:110}}>Deadline: {lot.deadline}</span>
+                  <span style={{fontWeight:700,color:lot.statusColor}}>{lot.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Farmer coordination */}
+      <div className="grid-2 mb-16">
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Farmer Status</span>
+            <span className="text-xs text-muted">{activeFarmers}/{totalFarmers} active</span>
+          </div>
+          <div className="card-body">
+            <ProgressBar value={activeFarmers} max={totalFarmers} />
+            <div className="flex-col mt-8">
+              {[
+                ['Reporting on time', `${activeFarmers} farms`, ''],
+                ['Harvest logged', '71 farms', ''],
+                ['Awaiting dispatch', '18 farms', 'amber'],
+                ['Offline / no signal', `${totalFarmers-activeFarmers} farms`, 'muted'],
+              ].map(([k,v,c]) => (
+                <div key={k} className="flex-between" style={{padding:'4px 0',borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className={`text-sm font-bold ${c==='amber'?'text-amber':''} ${c==='muted'?'text-muted':''}`}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Buyer Summary <span className="sim-tag">simulated</span></span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Buyer Hub A (Tomatoes)', '45 t confirmed', 'green'],
+                ['Buyer Hub B (Paddy)', '26 t confirmed', 'green'],
+                ['Spot market', 'Open', ''],
+                ['Unfulfilled demand', `${Math.max(0,gap)} t`, gap>0?'amber':''],
+              ].map(([k,v,c]) => (
+                <div key={k} className="flex-between" style={{padding:'5px 0',borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className={`text-sm font-bold ${c==='green'?'text-green':c==='amber'?'text-amber':''}`}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mission statement */}
+      <div style={{background:'var(--forest)',borderRadius:'var(--radius-md)',padding:'16px 20px',border:'1px solid var(--green-dk)'}}>
+        <div style={{fontSize:'0.65rem',textTransform:'uppercase',letterSpacing:'0.12em',color:'rgba(255,255,255,0.35)',marginBottom:8}}>AFRO Network Design Principle</div>
+        <div style={{fontSize:'0.82rem',color:'rgba(255,255,255,0.8)',lineHeight:1.7}}>
+          AFRO Network coordinates farms, cooperative storage, and market logistics through the FPO rather than acting as a standalone marketplace. Smallholders benefit from collective bargaining, shared logistics, and transparent quality assurance — with the FPO remaining the trusted intermediary.
+        </div>
+        <div style={{marginTop:10,display:'flex',gap:8,flexWrap:'wrap'}}>
+          {['Collective Pricing','Shared Cold-Chain','Transparent Grading','FEFO Dispatch','FPO Governed'].map(t=>(
+            <span key={t} className="badge white">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   FARM PROFILE PAGE
+   ═══════════════════════════════════════════════ */
+function FarmProfilePage({ state, dispatch }) {
+  const { farmName, farmArea, crop, mode, fields, pumpState, pumpEnergy,
+          waterLevel, soilMoisture, cloudOnline, solarAvailability, batteryLevel } = state;
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-row">
+          <div>
+            <div className="page-title">Farm Profile</div>
+            <div className="page-subtitle">Registration details · Field configuration · System setup</div>
+          </div>
+          <button className="btn btn-ghost btn-sm" onClick={() => dispatch({ type: 'SET_PAGE', payload: 'dashboard' })}>
+            ← Back to Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Identity card */}
+      <div className="mb-16">
+        <div className="farm-overview">
+          <div>
+            <div className="farm-title">{farmName}</div>
+            <div style={{fontSize:'0.72rem',color:'rgba(255,255,255,0.4)',marginTop:2}}>
+              Kharif 2026 · Paddy Cultivation Season
+            </div>
+          </div>
+          <div className="farm-meta">
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Total Area</div>
+              <div className="farm-meta-val">{farmArea}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Primary Crop</div>
+              <div className="farm-meta-val">{crop}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">Control Mode</div>
+              <div className="farm-meta-val">{mode}</div>
+            </div>
+            <div className="farm-meta-item">
+              <div className="farm-meta-label">FPO Member</div>
+              <div className="farm-meta-val">Yes</div>
+            </div>
+          </div>
+          <div className="farm-mode-badge">AUTO MODE</div>
+        </div>
+      </div>
+
+      {/* Farmer details + location */}
+      <div className="grid-2 mb-16">
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Farmer Details</span>
+            <span className="badge grey">Registered</span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Farmer name',       'Riya Deshmukh'],
+                ['Farmer ID',         'FMR-2024-0471'],
+                ['FPO membership',    'Vidarbha Agri Collective'],
+                ['Registration date', 'March 2024'],
+                ['District',          'Amravati, Maharashtra'],
+                ['Village',           'Dhamangaon'],
+                ['Phone',             '+91 98XXX XXXXX'],
+                ['AFRO tier',         'Standard (Paddy)'],
+              ].map(([k, v]) => (
+                <div key={k} className="flex-between" style={{padding:'6px 0', borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className="text-sm font-bold">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Land & Crop Configuration</span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Total land area',    farmArea],
+                ['Irrigated area',     '1.4 ha'],
+                ['Current crop',       crop],
+                ['Crop season',        'Kharif 2026'],
+                ['Transplant date',    '5 Sept 2026'],
+                ['Expected harvest',   'Dec 2026'],
+                ['Soil type',          'Black cotton soil'],
+                ['Water source',       'Borewell + canal'],
+              ].map(([k, v]) => (
+                <div key={k} className="flex-between" style={{padding:'6px 0', borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className="text-sm font-bold">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Field configuration */}
+      <div className="mb-16">
+        <div className="section-title">Field Configuration</div>
+        <div className="grid-3">
+          {fields.map(f => (
+            <div key={f.id} className="card">
+              <div className="card-header">
+                <span className="section-title" style={{margin:0}}>{f.name}</span>
+                <span className={`badge ${f.status === 'healthy' ? 'green' : f.status === 'stress' ? 'red' : 'amber'}`}>
+                  {f.status === 'healthy' ? 'Healthy' : f.status === 'stress' ? 'Attention' : 'Monitor'}
+                </span>
+              </div>
+              <div className="card-body">
+                <div className="flex-col">
+                  {[
+                    ['Area',          f.area],
+                    ['Soil moisture', f.moisture + '%'],
+                    ['Sensor nodes',  '3 active'],
+                    ['Crop variety',  'IR-64 Paddy'],
+                  ].map(([k, v]) => (
+                    <div key={k} className="flex-between" style={{padding:'4px 0', borderBottom:'1px solid var(--border-lt)'}}>
+                      <span className="text-xs text-muted">{k}</span>
+                      <span className="text-xs font-bold">{v}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{marginTop:10}}>
+                  <div className="label" style={{marginBottom:4}}>Moisture</div>
+                  <ProgressBar value={f.moisture} max={100} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Hardware / system */}
+      <div className="grid-2 mb-16">
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Installed Hardware <span className="sim-tag">simulated</span></span>
+          </div>
+          <div className="card-body">
+            <div className="flex-col">
+              {[
+                ['Edge controller',       'AFRO Edge v2 — Active'],
+                ['Soil moisture sensors', '9 nodes (3 per field)'],
+                ['Water-table sensor',    '1 borewell probe'],
+                ['Pump',                  '5HP submersible — ' + pumpState],
+                ['Solar panel',           '6 kW array'],
+                ['Battery storage',       '10 kWh lithium'],
+                ['GSM/4G modem',         cloudOnline ? 'Connected' : 'Offline'],
+              ].map(([k, v]) => (
+                <div key={k} className="flex-between" style={{padding:'5px 0', borderBottom:'1px solid var(--border-lt)'}}>
+                  <span className="text-sm text-muted">{k}</span>
+                  <span className={`text-sm font-bold ${v.includes('Offline') ? 'text-amber' : v.includes('Active') || v.includes('Connected') ? 'text-green' : ''}`}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <span className="section-title" style={{margin:0}}>Energy Overview <span className="sim-tag">simulated</span></span>
+          </div>
+          <div className="card-body">
+            <div className="metrics-grid" style={{gridTemplateColumns:'1fr 1fr'}}>
+              <MetricCard label="Solar Output" value={solarAvailability.toFixed(1)} unit="kW" variant="active" />
+              <MetricCard label="Battery" value={batteryLevel} unit="%" variant="info" />
+              <MetricCard label="Today's Usage" value={pumpEnergy.toFixed(1)} unit="kWh" variant="" />
+              <MetricCard label="Grid Draw" value="0.4" unit="kWh" variant="" />
+            </div>
+            <div style={{marginTop:12}}>
+              <div className="label" style={{marginBottom:4}}>Battery level</div>
+              <ProgressBar value={batteryLevel} max={100} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pilot targets */}
+      <div className="target-box">
+        <div className="target-title">Farm Pilot Targets <span className="sim-tag">to be validated</span></div>
+        <div className="target-row">
+          <span className="target-metric">Irrigation water use</span>
+          <div className="target-values">
+            <span className="target-baseline">Baseline: 12.5M L/ha</span>
+            <span className="target-goal">Target: 8.5M L/ha <span className="target-tag">target</span></span>
+          </div>
+        </div>
+        <div className="target-row">
+          <span className="target-metric">Energy consumption</span>
+          <div className="target-values">
+            <span className="target-baseline">Baseline: 1,450 kWh/ha</span>
+            <span className="target-goal">Target: 1,000 kWh/ha <span className="target-tag">target</span></span>
+          </div>
+        </div>
+        <div className="target-row">
+          <span className="target-metric">Post-harvest storage loss</span>
+          <div className="target-values">
+            <span className="target-baseline">Baseline: 18%</span>
+            <span className="target-goal">Pilot target: {'<'}3% <span className="target-tag">target</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   ALERTS PAGE
+   ═══════════════════════════════════════════════ */
+function AlertsPage({ state, dispatch }) {
+  const {
+    cropStressActive, cloudOnline, outageActive, irrigationPhase,
+    waterLevel, waterThreshold, pumpState, soilMoisture,
+    storageTemp, qualityRiskHours, solarAvailability,
+    photoRequested, vegTrend, events
+  } = state;
+
+  // Build alerts list dynamically from existing simulation state
+  const alerts = [];
+
+  if (!cloudOnline) {
+    alerts.push({
+      id: 'cloud-offline',
+      severity: 'critical',
+      icon: '🔴',
+      title: 'Cloud connection unavailable',
+      detail: 'Local edge control is active. All irrigation decisions are running on onboard rules. Events will sync when connection is restored.',
+      time: 'Now',
+      module: 'AFRO Field',
+      action: () => dispatch({ type: 'RECONNECT_CLOUD' }),
+      actionLabel: '☁ Reconnect Cloud',
+      actionDisabled: false,
+    });
+  }
+
+  if (irrigationPhase === 'threshold-crossed' || irrigationPhase === 'pumping') {
+    alerts.push({
+      id: 'irrigation-active',
+      severity: irrigationPhase === 'pumping' ? 'info' : 'warning',
+      icon: irrigationPhase === 'pumping' ? '⚙' : '⚠',
+      title: irrigationPhase === 'pumping' ? 'Irrigation cycle in progress' : 'Irrigation threshold crossed — pump starting',
+      detail: `Water level: ${waterLevel.toFixed(1)} cm · Threshold: ${waterThreshold} cm · Pump: ${pumpState}`,
+      time: 'Active',
+      module: 'AFRO Field',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'dashboard' }),
+      actionLabel: 'View Dashboard',
+      actionDisabled: false,
+    });
+  }
+
+  if (irrigationPhase === 'complete') {
+    alerts.push({
+      id: 'irrigation-done',
+      severity: 'success',
+      icon: '✓',
+      title: 'Irrigation cycle complete — outcome verified',
+      detail: `Pump OFF · Water level restored to ${waterLevel.toFixed(1)} cm · Soil moisture: ${soilMoisture}%`,
+      time: 'Recent',
+      module: 'AFRO Field',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'dashboard' }),
+      actionLabel: 'View Dashboard',
+      actionDisabled: false,
+    });
+  }
+
+  if (cropStressActive) {
+    alerts.push({
+      id: 'crop-stress',
+      severity: 'warning',
+      icon: '🌿',
+      title: 'Potential crop stress detected — Field 3',
+      detail: `Vegetation index trend: ${vegTrend}% vs expected trajectory · Soil moisture low · Temperature elevated. Field verification required before action.`,
+      time: 'Active',
+      module: 'AFRO Intelligence',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'crophealth' }),
+      actionLabel: 'View Crop Health',
+      actionDisabled: false,
+    });
+    if (!photoRequested) {
+      alerts.push({
+        id: 'photo-pending',
+        severity: 'warning',
+        icon: '📷',
+        title: 'Field photo verification not yet requested',
+        detail: 'AFRO has detected a crop stress signal on Field 3. Request a photo from the farmer to confirm before any intervention.',
+        time: 'Pending',
+        module: 'AFRO Intelligence',
+        action: () => { dispatch({ type: 'REQUEST_PHOTO' }); dispatch({ type: 'SET_PAGE', payload: 'crophealth' }); },
+        actionLabel: 'Request Photo',
+        actionDisabled: false,
+      });
+    } else {
+      alerts.push({
+        id: 'photo-requested',
+        severity: 'info',
+        icon: '📷',
+        title: 'Farmer photo verification requested — awaiting response',
+        detail: 'Photo request sent for Field 3. Awaiting field verification before agronomic decision.',
+        time: 'Awaiting',
+        module: 'AFRO Intelligence',
+        action: null,
+        actionLabel: null,
+        actionDisabled: true,
+      });
+    }
+  }
+
+  if (qualityRiskHours <= 20) {
+    alerts.push({
+      id: 'quality-risk',
+      severity: 'warning',
+      icon: '📦',
+      title: `Quality risk window: ${qualityRiskHours} hours remaining — Lot T-042`,
+      detail: `Storage temperature: ${storageTemp.toFixed(1)}°C · Buyer deadline: Tomorrow 10:00 · Dispatch recommended via FEFO.`,
+      time: 'Active',
+      module: 'AFRO Store',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'store' }),
+      actionLabel: 'View Store',
+      actionDisabled: false,
+    });
+  }
+
+  if (solarAvailability >= 6) {
+    alerts.push({
+      id: 'solar-opportunity',
+      severity: 'info',
+      icon: '☀',
+      title: 'High solar availability — pre-cooling opportunity',
+      detail: `Solar output: ${solarAvailability.toFixed(1)} kW · Recommended: run pre-cooling cycle now to reduce grid cost.`,
+      time: 'Now',
+      module: 'AFRO Store',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'store' }),
+      actionLabel: 'View Store',
+      actionDisabled: false,
+    });
+  }
+
+  if (soilMoisture < 28 && irrigationPhase === 'idle') {
+    alerts.push({
+      id: 'low-moisture',
+      severity: 'warning',
+      icon: '💧',
+      title: 'Soil moisture below recommended level',
+      detail: `Current: ${soilMoisture}% · Recommended minimum: 30% for tillering stage · Consider initiating irrigation.`,
+      time: 'Active',
+      module: 'AFRO Field',
+      action: () => dispatch({ type: 'SET_PAGE', payload: 'dashboard' }),
+      actionLabel: 'View Dashboard',
+      actionDisabled: false,
+    });
+  }
+
+  // Always-present informational alerts
+  alerts.push({
+    id: 'edge-nominal',
+    severity: 'success',
+    icon: '⚡',
+    title: 'Edge controller operating normally',
+    detail: 'All local rules active · Sensor polling interval: 60s · Last heartbeat: just now.',
+    time: 'Nominal',
+    module: 'System',
+    action: null,
+    actionLabel: null,
+    actionDisabled: true,
+  });
+
+  const severityOrder = { critical: 0, warning: 1, info: 2, success: 3 };
+  alerts.sort((a, b) => (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9));
+
+  const severityStyle = {
+    critical: { border: 'var(--red)',   bg: 'var(--red-bg)',   label: 'Critical', badgeClass: 'red'   },
+    warning:  { border: 'var(--amber)', bg: 'var(--amber-bg)', label: 'Warning',  badgeClass: 'amber' },
+    info:     { border: 'var(--blue)',  bg: 'var(--blue-bg)',  label: 'Info',     badgeClass: 'blue'  },
+    success:  { border: 'var(--green-lt)', bg: '#f0f8f0',      label: 'OK',       badgeClass: 'green' },
+  };
+
+  const activeCount = alerts.filter(a => a.severity === 'critical' || a.severity === 'warning').length;
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-row">
+          <div>
+            <div className="page-title">Alerts & Notifications</div>
+            <div className="page-subtitle">Live system signals · Action items · Event history</div>
+          </div>
+          <div className="flex-row gap-8">
+            {activeCount > 0
+              ? <StatusBadge status="warning" label={`${activeCount} active alert${activeCount > 1 ? 's' : ''}`} pulsing />
+              : <StatusBadge status="normal" label="All clear" />
+            }
+            <button className="btn btn-ghost btn-sm" onClick={() => dispatch({ type: 'SET_PAGE', payload: 'dashboard' })}>
+              ← Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Summary strip */}
+      <div className="mb-16">
+        <div className="metrics-grid" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
+          <MetricCard label="Critical" value={alerts.filter(a=>a.severity==='critical').length} sub="Immediate action" variant={alerts.filter(a=>a.severity==='critical').length > 0 ? 'critical' : ''} />
+          <MetricCard label="Warnings" value={alerts.filter(a=>a.severity==='warning').length} sub="Monitor closely" variant={alerts.filter(a=>a.severity==='warning').length > 0 ? 'warning' : ''} />
+          <MetricCard label="Info" value={alerts.filter(a=>a.severity==='info').length} sub="Opportunities" variant="info" />
+          <MetricCard label="Nominal" value={alerts.filter(a=>a.severity==='success').length} sub="Operating normally" variant="" />
+        </div>
+      </div>
+
+      {/* Alert list */}
+      <div className="mb-16">
+        <div className="section-title">Active Alerts & Signals</div>
+        <div className="flex-col" style={{gap:10}}>
+          {alerts.map(alert => {
+            const s = severityStyle[alert.severity] || severityStyle.info;
+            return (
+              <div
+                key={alert.id}
+                style={{
+                  background: s.bg,
+                  border: `1px solid`,
+                  borderColor: s.border,
+                  borderLeft: `4px solid ${s.border}`,
+                  borderRadius: 'var(--radius-md)',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 14,
+                }}
+                className="fade-in"
+              >
+                <span style={{fontSize:'1.3rem', flexShrink:0, marginTop:1}}>{alert.icon}</span>
+                <div style={{flex:1, minWidth:0}}>
+                  <div className="flex-between" style={{marginBottom:4, flexWrap:'wrap', gap:6}}>
+                    <span style={{fontWeight:700, fontSize:'0.85rem', color:'var(--charcoal)'}}>{alert.title}</span>
+                    <div className="flex-row gap-4">
+                      <span className={`badge ${s.badgeClass}`}>{s.label}</span>
+                      <span className="badge grey">{alert.module}</span>
+                      <span style={{fontSize:'0.65rem', color:'var(--muted)'}}>{alert.time}</span>
+                    </div>
+                  </div>
+                  <div style={{fontSize:'0.75rem', color:'var(--slate)', lineHeight:1.6, marginBottom: alert.action ? 10 : 0}}>
+                    {alert.detail}
+                  </div>
+                  {alert.action && !alert.actionDisabled && (
+                    <button className="btn btn-secondary btn-xs" onClick={alert.action}>
+                      {alert.actionLabel}
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Recent event log */}
+      <div className="mb-16">
+        <div className="section-title flex-between">
+          <span>Recent Event Log</span>
+          <span className="text-xs text-muted font-mono">{events.length} entries</span>
+        </div>
+        <EventLog events={events} />
+      </div>
+
+      {/* Simulation nudge */}
+      <div style={{background:'var(--off-white)',border:'1px solid var(--border-lt)',borderRadius:'var(--radius-md)',padding:'12px 16px'}}>
+        <div style={{fontSize:'0.72rem',color:'var(--muted)',marginBottom:8}}>
+          <strong style={{color:'var(--slate)'}}>Simulate conditions</strong> to see alerts populate in real time:
+        </div>
+        <SimControls state={state} dispatch={dispatch} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN APP
+   ═══════════════════════════════════════════════ */
+function App() {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const intervalRef = useRef(null);
+
+  // Simulation tick
+  useEffect(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    if (state.irrigationPhase === 'drying') {
+      intervalRef.current = setInterval(() => {
+        dispatch({ type: 'TICK_DRY' });
+      }, 900);
+    } else if (state.irrigationPhase === 'threshold-crossed') {
+      // auto-trigger irrigation after a brief pause
+      const t = setTimeout(() => dispatch({ type: 'TRIGGER_IRRIGATION' }), 1200);
+      return () => clearTimeout(t);
+    } else if (state.irrigationPhase === 'pumping') {
+      intervalRef.current = setInterval(() => {
+        dispatch({ type: 'TICK_PUMP' });
+      }, 700);
+    }
+
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [state.irrigationPhase]);
+
+  const navItems = [
+    { id: 'dashboard',   icon: '⊞', label: 'Dashboard',    badge: state.irrigationPhase === 'threshold-crossed' || (!state.cloudOnline) ? '!' : null },
+    { id: 'crophealth',  icon: '🌿', label: 'Crop Health',  badge: state.cropStressActive ? '!' : null },
+    { id: 'store',       icon: '📦', label: 'Store',        badge: null },
+    { id: 'fpo',         icon: '🤝', label: 'FPO Network',  badge: null },
+  ];
+
+  const renderPage = () => {
+    switch (state.page) {
+      case 'dashboard':  return <DashboardPage state={state} dispatch={dispatch} />;
+      case 'crophealth': return <CropHealthPage state={state} dispatch={dispatch} />;
+      case 'store':      return <StorePage state={state} dispatch={dispatch} />;
+      case 'fpo':        return <FPOPage state={state} dispatch={dispatch} />;
+      case 'farm':       return <FarmProfilePage state={state} dispatch={dispatch} />;
+      case 'alerts':     return <AlertsPage state={state} dispatch={dispatch} />;
+      default:           return <DashboardPage state={state} dispatch={dispatch} />;
+    }
+  };
+
+  return (
+    <div className="app-shell">
+      {/* Header */}
+      <header className="app-header">
+        <div className="header-brand">
+          <span className="header-logo">AFRO Stack</span>
+          <span className="header-tagline">Agentic Farm-Gate Resource Orchestrator</span>
+        </div>
+        <div className="header-right">
+          <div className="header-connectivity">
+            <span className={`conn-badge ${state.cloudOnline ? 'online' : 'offline'}`}>
+              ☁ Cloud {state.cloudOnline ? 'Online' : 'Offline'}
+            </span>
+            <span className={`conn-badge ${state.outageActive ? 'active' : 'online'}`}>
+              ⚡ Edge {state.outageActive ? 'Active' : 'Online'}
+            </span>
+            {state.syncPending > 0 && (
+              <span className="conn-badge active">{state.syncPending} queued</span>
+            )}
+          </div>
+          <div className="system-status">
+            <span className={`status-dot ${state.cloudOnline ? '' : 'warning'}`} />
+            <span className="status-label">System {state.cloudOnline ? 'Online' : 'Degraded'}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Offline banner */}
+      <OfflineBanner state={state} />
+
+      {/* Body */}
+      <div className="app-body">
+        {/* Sidebar */}
+        <nav className="sidebar">
+          <div className="sidebar-section-label">Modules</div>
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              className={`nav-item ${state.page === item.id ? 'active' : ''}`}
+              onClick={() => dispatch({ type: 'SET_PAGE', payload: item.id })}
+            >
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+              {item.badge && <span className="nav-badge">{item.badge}</span>}
+            </button>
+          ))}
+          <hr className="sidebar-divider" />
+          <div className="sidebar-section-label">Farm</div>
+          <button
+            className={`nav-item ${state.page === 'farm' ? 'active' : ''}`}
+            onClick={() => dispatch({ type: 'SET_PAGE', payload: 'farm' })}
+          >
+            <span className="nav-icon">👤</span>
+            <span>Riya's Farm</span>
+          </button>
+          <button
+            className={`nav-item ${state.page === 'alerts' ? 'active' : ''}`}
+            onClick={() => dispatch({ type: 'SET_PAGE', payload: 'alerts' })}
+          >
+            <span className="nav-icon">🔔</span>
+            <span>Alerts</span>
+            {(state.cropStressActive || !state.cloudOnline) && <span className="nav-badge">!</span>}
+          </button>
+          <div className="sidebar-footer">
+            <div>AFRO Stack v0.9</div>
+            <div>Hackathon Prototype</div>
+            <div style={{marginTop:4,color:'rgba(255,255,255,0.15)'}}>Schneider Electric · SE Challenge</div>
+          </div>
+        </nav>
+
+        {/* Main */}
+        <main className="main-content">
+          {renderPage()}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
